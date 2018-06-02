@@ -1,0 +1,44 @@
+<html>
+
+<head>
+  <style>
+    div.editable {
+      width: 300px;
+      min-height: 200px;
+      border: 1px solid #ccc;
+      padding: 5px;
+    }
+
+    strong {
+      font-weight: bold;
+    }
+  </style>
+  <script src="js/index.js"></script>
+  <script src="js/jquery.js"></script>
+  <script src="js/pegjs.js"></script>
+  <script src="js/urlparser.js"></script>
+
+</head>
+
+<body>
+  <script>
+    $(document).ready(function () {
+      var text = $.urlParam('text');
+      if(text){
+        $('#text').text(text);
+      }else{
+        $('#text').text('The sun turns around the earth{F}');
+      }
+    });
+  </script>
+  <div id="text" class="editable" contenteditable="true">
+    What two people are entombed in Grant's tomb? { ~%-100%No one ~%50%Grant # yup its good ~%50%Grant's wife ~%-100%Grant's
+    father } What's between orange and green in the spectrum? {=yellow # correct! ~red # wrong, it's yellow ~blue # wrong,
+    it's yellow} The sun turns around the earth{F} The sun rises in the east.{T}
+  </div>
+  <div id="result"></div>
+  <br>
+  <button onclick="onKeyPressed($('#text'), $('#result'));">Validate</button>
+</body>
+
+</html>
