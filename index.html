@@ -25,7 +25,7 @@
     $(document).ready(function () {
       var text = $.urlParam('text');
       if(text){
-        $('#text').text(text);
+        $('#text').text(decodeURIComponent(text));
       }else{
         $('#text').text('The sun turns around the earth{F}');
       }
