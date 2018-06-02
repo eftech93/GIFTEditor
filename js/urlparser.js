@@ -4,6 +4,6 @@ $.urlParam = function (name) {
     if (results == null) {
         return undefined;
     } else {
-        return decodeURI(results[1]) || 0;
+        return results[1] || 0;
     }
 }
