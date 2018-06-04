@@ -12,6 +12,10 @@
     strong {
       font-weight: bold;
     }
+
+    u.spelling {
+      text-decoration: red wavy underline;
+    }
   </style>
   <script src="js/index.js"></script>
   <script src="js/jquery.js"></script>
@@ -24,14 +28,15 @@
   <script>
     $(document).ready(function () {
       var text = $.urlParam('text');
-      if(text){
-        $('#text').text(decodeURIComponent(text));
-      }else{
+      if (text) {
+        text = text.replace(/\%0A/g, "<br>");
+        $('#text').html(decodeURIComponent(text));
+      } else {
         $('#text').text('The sun turns around the earth{F}');
       }
     });
   </script>
-  <div id="text" class="editable" contenteditable="true">
+  <div id="text" class="editable" contenteditable="true" onpaste="onPaste(event, $('#text'), $('#result'));" oncopy="onCopy(event, $('#text'));">
   </div>
   <div id="result"></div>
   <br>

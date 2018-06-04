@@ -1,16 +1,13 @@
-function checkGift(str){
-
-}
 
 function removeErrorMessageFromElement(element){
     var html = $(element).html();
-    html.replace("<u class=\"spelling\">", "");
+    html.replace("<u class=\'spelling\'>", "");
     html.replace("</u>", "");
     $(element).html(html);
 }
 
 function removerErrorMessage(hmtl){
-    html.replaceAll("<u class=\"spelling\">", "");
+    html.replaceAll("<u class=\'spelling\'>", "");
     html.replaceAll("</u>", "");
     return html;
 }
@@ -42,7 +39,10 @@ function verifyGift(str){
         }
   
         badGIFT=paddingBefore+underlinedText+paddingAfter;
-        return {error:"Line "+parseInt(err.location.start.line)+"<br> column "+parseInt(err.location.start.column)+"<br> near: "+badGIFT+"<br> "+err.message};
+        return {error: {"line" : parseInt(err.location.start.line),
+                "column" : parseInt(err.location.start.column),
+                "near":badGIFT,
+                "message": err.message}};
         //return new Error("Line "+parseInt(err.location.start.line)+", column "+parseInt(err.location.start.column)+" near:<b> "+badGIFT+"</b><br> "+err.message);
       } else {
         return {error: err};
@@ -52,24 +52,67 @@ function verifyGift(str){
   
   function onKeyPressed(element, result){
       try{
-        removeErrorMessageFromElement(element);
         var str = $(element).html();
         str = removeHTMLElements(str);
         var r = verifyGift(str);
         if(r['result']){
-            $(result).text(r['result']);
+            $(result).html(r['result']);
         }else{
-            $(result).html(r['error']);
+            if(r['error']['line']){
+              var line = r['error']['line'];
+              var column = r['error']['column'];
+              var near = r['error']['near'];
+              var message = r['error']['message'];
+              var strArray = str.split('\n');
+              strArray[line - 1] = '<u class=\'spelling\'>' + strArray[line - 1] + '</u>';
+              str = strArray.join('<br>');
+              //str = str.slice(0, r['error']['near']) +  '<u class="spelling">' + str.slice( r['error']['near'],  r['error']['near'] + 10) + '</u>' + str.slice( r['error']['near'] + 10);
+              //str = str.replace(/\\n/g, '<br>');
+              $(element).html(str);
+              var errorMessage  ="Error at line : " + line + " and column : " + column + "<br>Near : " + near + "<br> Error Message : " + message;
+              $(result).html(errorMessage);
+            }else{
+              $(result).html(r['error']);
+            }
+            
         }
+
       }catch(err){
         $(result).html(err);
       }
+  }
+
+  function onPaste(e, element,result){
+    e.preventDefault();
+    var pastedText;
+    if(window.clipboardData && window.clipboardData.getData ) {
+      pastedText = window.clipboardData.getData('Text');
+    }  else if( e.clipboardData && e.clipboardData.getData ){
+      pastedText = e.clipboardData.getData('text/plain');
+    }
+    pastedText = removeHTMLElements(pastedText);
+    pastedText = pastedText.replace(/\\\n/g, '<br>');
+    pastedText = pastedText.replace(/\%0A/g, "<br>");
+    $(element).html(pastedText);
+    onKeyPressed(element, result);
+  }
+
+  function onCopy(e, element){
+    e.preventDefault();
+    var str = $(element).html();
+    e.clipboardData.setData('text/html', str);
+    alert(str);
+    str = removeHTMLElements(str);
+    e.clipboardData.setData('text/plain', str);
+    alert(str);
   }
 
   function removeHTMLElements(str){
     str = str.replace(/\<br>/g, '\n');
     str = str.replace(/\<div>/g, '');
     str = str.replace(/\<\/div>/g, '');
+    str = str.replace(/\<u class="spelling">/g, '');
+    str = str.replace(/\<\/u>/g, '');
     return str;
   }
   
